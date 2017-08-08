@@ -1,24 +1,26 @@
-# README
+# Code challenge for Envisagenics
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This is an API that can get input from BAM files and convert them to BigWig format for a UI or some frontend can then hit this API to display the graph format of the data.
 
-Things you may want to cover:
 
-* Ruby version
+This is an example browser
 
-* System dependencies
+https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&lastVirtModeType=default&lastVirtModeExtraState=&virtModeType=default&virtMode=0&nonVirtPosition=&position=chr1%3A11102837%2D11267747&hgsid=601834951_4P9Wf6Asjws0b1BM0XZVhju4pWWo
 
-* Configuration
+---
 
-* Database creation
+How to use this program:
 
-* Database initialization
+In the rakefile, update the path, sample and ext to match your files (in this example there are four given).
 
-* How to run the test suite
+1. rake db:create
+2. rake db:migrate
+3. rake app:scrape
 
-* Services (job queues, cache servers, search engines, etc.)
+The "rake app:scrape" command works by:
 
-* Deployment instructions
-
-* ...
+1. Generates relevant FASTA files
+2. Creates base SAM enums
+3. Index those enums to generate .bai files
+4. Generates SAM files
+5. Iterates through each SAM file to populate a database
