@@ -15,7 +15,7 @@ In the rakefile, update the path, sample and ext to match your files (in this ex
 
 1. rake db:create
 2. rake db:migrate
-3. rake app:scrape
+3. rake scrape
 
 The "rake app:scrape" command works by:
 
