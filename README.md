@@ -9,15 +9,22 @@ https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&lastVirtModeType=default&lastVi
 
 ---
 
+The file currently has SAM endpoints for each Alignment:
+
+![alignments](http://i.imgur.com/nKAPuFz.png)
+
 How to use this program:
 
-In the rakefile, update the path, sample and ext to match your files (in this example there are four given).
+Before you scrape your data, first run `rake reload` which does:
 
-1. rake db:create
-2. rake db:migrate
-3. rake scrape
+1. rake db:drop
+2. rake db:create
+3. rake db:migrate
+4. rake db:migrate RAILS_ENV=development
 
-The "rake app:scrape" command works by:
+When you scrape the file you'll first be asked to first be asked to update the path, sample, and ext to match your files (in this example there are four given). To scrape type in `rake scrape`. You can manually go into the rakefile to edit files to scrape in.
+
+The "rake scrape" command works by:
 
 1. Generates relevant FASTA files
 2. Creates base SAM enums

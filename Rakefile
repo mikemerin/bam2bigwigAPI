@@ -9,14 +9,30 @@ Rails.application.load_tasks
 
 def scrape(t)
 
-  count, array = 0, []
-  puts "\nMigration starting at #{t}"
-  puts "---------"
-
   # # file shorteners
   path = "/Users/flatironschool/Envisagenics/"
   sample = "Sample_LID115547"
   ext = ".me.bam.sort.bam.clean.exon."
+
+
+  # prompt to change file path/name
+  puts "The current file path and name is:\n"
+  puts "#{path}#{sample}_numbers#{ext}bam\n"
+  puts "Would you like to change this? (y/n)\n"
+
+  # choice = gets.chomp
+  # if choice.downcase == "y"
+  #   puts "path (currently #{path})"
+  #   path = gets.chomp
+  #   puts "sample (currently #{sample})"
+  #   sample = gets.chomp
+  #   puts "extension (currently #{ext})"
+  #   ext = gets.chomp
+  # end
+
+  count, array = 0, []
+  puts "\nMigration starting at #{t}"
+  puts "---------"
 
   # # file names
   bam11 = "#{path}#{sample}_1_1#{ext}bam"
@@ -44,67 +60,71 @@ def scrape(t)
   fa22s = "#{sample}_2_2#{ext}fa"
 
   # # generate FASTA files
-  # puts "Generating bam11 fasta at ${Time.now}"
-  # system "samtools bam2fq #{bam11} | /users/flatironschool/seqtk/seqtk seq -A > #{fa11s}"
-  # puts "Generating bam12 fasta at ${Time.now}"
-  # system "samtools bam2fq #{bam12} | /users/flatironschool/seqtk/seqtk seq -A > #{fa12s}"
-  # puts "Generating bam21 fasta at ${Time.now}"
-  # system "samtools bam2fq #{bam21} | /users/flatironschool/seqtk/seqtk seq -A > #{fa21s}"
-  # puts "Generating bam22 fasta at ${Time.now}"
-  # system "samtools bam2fq #{bam22} | /users/flatironschool/seqtk/seqtk seq -A > #{fa22s}"
+  puts "Generating bam11 fasta at ${Time.now}"
+  system "samtools bam2fq #{bam11} | /users/flatironschool/seqtk/seqtk seq -A > #{fa11s}"
+  puts "Generating bam12 fasta at ${Time.now}"
+  system "samtools bam2fq #{bam12} | /users/flatironschool/seqtk/seqtk seq -A > #{fa12s}"
+  puts "Generating bam21 fasta at ${Time.now}"
+  system "samtools bam2fq #{bam21} | /users/flatironschool/seqtk/seqtk seq -A > #{fa21s}"
+  puts "Generating bam22 fasta at ${Time.now}"
+  system "samtools bam2fq #{bam22} | /users/flatironschool/seqtk/seqtk seq -A > #{fa22s}"
 
   # # create base SAM enum and index for .bai files
-  # puts "Generating sample_LID115547_1_1 SAM"
-  # bam11g = Bio::DB::Sam.new(bam: bam11, fasta: fa11)
-  # puts "indexing at ${Time.now}"
-  # bam11g.index()
-  # puts "Generating sample_LID115547_1_2 SAM"
-  # bam12g = Bio::DB::Sam.new(bam: bam12, fasta: fa12)
-  # puts "indexing at ${Time.now}"
-  # bam12g.index()
-  # puts "Generating sample_LID115547_2_1 SAM"
-  # bam21g = Bio::DB::Sam.new(bam: bam21, fasta: fa21)
-  # puts "indexing at ${Time.now}"
-  # bam21g.index()
-  # puts "Generating sample_LID115547_2_2 SAM"
-  # bam22g = Bio::DB::Sam.new(bam: bam22, fasta: fa22)
-  # puts "indexing at ${Time.now}"
-  # bam22g.index()
+  puts "Generating sample_LID115547_1_1 SAM"
+  bam11g = Bio::DB::Sam.new(bam: bam11, fasta: fa11)
+  puts "indexing at ${Time.now}"
+  bam11g.index()
+  puts "Generating sample_LID115547_1_2 SAM"
+  bam12g = Bio::DB::Sam.new(bam: bam12, fasta: fa12)
+  puts "indexing at ${Time.now}"
+  bam12g.index()
+  puts "Generating sample_LID115547_2_1 SAM"
+  bam21g = Bio::DB::Sam.new(bam: bam21, fasta: fa21)
+  puts "indexing at ${Time.now}"
+  bam21g.index()
+  puts "Generating sample_LID115547_2_2 SAM"
+  bam22g = Bio::DB::Sam.new(bam: bam22, fasta: fa22)
+  puts "indexing at ${Time.now}"
+  bam22g.index()
 
   # # create SAM files
-  # puts "Generating sam11 at ${Time.now}"
-  # system "samtools view -h #{bam11} > #{sam11}"
-  # puts "Generating sam12 at ${Time.now}"
-  # system "samtools view -h #{bam12} > #{sam12}"
-  # puts "Generating sam21 at ${Time.now}"
-  # system "samtools view -h #{bam21} > #{sam21}"
-  # puts "Generating sam22 at ${Time.now}"
-  # system "samtools view -h #{bam22} > #{sam22}"
+  puts "Generating sam11 at ${Time.now}"
+  system "samtools view -h #{bam11} > #{sam11}"
+  puts "Generating sam12 at ${Time.now}"
+  system "samtools view -h #{bam12} > #{sam12}"
+  puts "Generating sam21 at ${Time.now}"
+  system "samtools view -h #{bam21} > #{sam21}"
+  puts "Generating sam22 at ${Time.now}"
+  system "samtools view -h #{bam22} > #{sam22}"
 
-  File.foreach(sam22) do |row|
-    split_row = row.split("\t")
-    split_row.map! { |x| ActiveRecord::Base.connection.quote(x) }
+  files = [sam11, sam12, sam21, sam22]
 
-    if row[0] != "@"
-      qname, flag, chromosome, pos, mapq, cigar, mrnm_rnext, mpos_pnext, isize_tlen, seq, qual = split_row
-      tags = split_row[11...split_row.size-1]
+  files.each do |file|
+    File.foreach(file) do |row|
+      split_row = row.split("\t")
+      split_row.map! { |x| ActiveRecord::Base.connection.quote(x) }
 
-      time = ActiveRecord::Base.connection.quote(Time.now)
-      array << "(#{qname}, #{flag}, #{chromosome}, #{pos}, #{mapq}, #{cigar}, #{mrnm_rnext}, #{mpos_pnext}, #{isize_tlen}, #{seq}, #{qual}, #{time}, #{time})"
+      if row[0] != "@"
+        qname, flag, chromosome, pos, mapq, cigar, mrnm_rnext, mpos_pnext, isize_tlen, seq, qual = split_row
+        tags = split_row[11...split_row.size-1]
+
+        time = ActiveRecord::Base.connection.quote(Time.now)
+        array << "(#{qname}, #{flag}, #{chromosome}, #{pos}, #{mapq}, #{cigar}, #{mrnm_rnext}, #{mpos_pnext}, #{isize_tlen}, #{seq}, #{qual}, #{time}, #{time})"
+      end
+
+      count += 1
+      $total_count += 1
+      puts "#{Time.now - t} s: #{count} alignments added" if count % 10000 == 0
+
+      if count % 200000 == 0
+        sql = "INSERT INTO alignments (qname, flag, chromosome, pos, mapq, cigar, mrnm_rnext, mpos_pnext, isize_tlen, seq, qual, created_at, updated_at) VALUES " + array.join(", ")
+        puts "============= Seeding 200,000 rows ============="
+        ActiveRecord::Base.connection.execute(sql)
+        puts "============= #{Alignment.all.count} rows are now in the database ============="
+        array = []
+      end
+
     end
-
-    count += 1
-    $total_count += 1
-    puts "#{Time.now - t} s: #{count} alignments added" if count % 10000 == 0
-
-    if count % 200000 == 0
-      sql = "INSERT INTO alignments (qname, flag, chromosome, pos, mapq, cigar, mrnm_rnext, mpos_pnext, isize_tlen, seq, qual, created_at, updated_at) VALUES " + array.join(", ")
-      puts "============= Seeding 200,000 rows ============="
-      ActiveRecord::Base.connection.execute(sql)
-      puts "============= #{Alignment.all.count} rows are now in the database ============="
-      array = []
-    end
-
   end
 
   sql = "INSERT INTO alignments (qname, flag, chromosome, pos, mapq, cigar, mrnm_rnext, mpos_pnext, isize_tlen, seq, qual, created_at, updated_at) VALUES " + array.join(", ")
