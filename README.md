@@ -13,7 +13,9 @@ The file currently has SAM endpoints for each Alignment:
 
 ![alignments](http://i.imgur.com/nKAPuFz.png)
 
-How to use this program:
+---
+
+Instructions
 
 Before you scrape your data, first run `rake reload` which does:
 
@@ -24,10 +26,20 @@ Before you scrape your data, first run `rake reload` which does:
 
 When you scrape the file you'll first be asked to first be asked to update the path, sample, and ext to match your files (in this example there are four given). To scrape type in `rake scrape`. You can manually go into the rakefile to edit files to scrape in.
 
-The "rake scrape" command works by:
+The `rake scrape` command works by:
 
 1. Generates relevant FASTA files
 2. Creates base SAM enums
 3. Index those enums to generate .bai files
 4. Generates SAM files
 5. Iterates through each SAM file to populate a database
+
+---
+
+Once you populate your database, type in `rails s` to start your server. The endpoints for each alignment can be found by the following URL format:
+
+`http://localhost:3000/api/v1/alignments/<number>`
+
+---
+
+CLI summary: `rake reload`, `rake scrape`, `rails s`
