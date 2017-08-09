@@ -9,9 +9,12 @@ end
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.2'
 # Use sqlite3 as the database for Active Record
-gem 'sqlite3'
+# gem 'sqlite3'
+# Use postgresql as the database for Active Record
+gem 'pg'
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
+
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
@@ -28,8 +31,6 @@ gem 'puma', '~> 3.7'
 gem 'bio', '~> 1.5', '>= 1.5.1'
 gem 'bio-svgenes', '~> 0.4.1'
 gem 'bio-samtools'
-gem 'rubysl-zlib', '~> 2.0', '>= 2.0.1'
-gem 'rubysl-stringio', '~> 2.0'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

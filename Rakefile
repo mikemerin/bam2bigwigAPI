@@ -54,20 +54,20 @@ def scrape(t)
   # system "samtools bam2fq #{bam22} | /users/flatironschool/seqtk/seqtk seq -A > #{fa22s}"
 
   # # create base SAM enum and index for .bai files
-  puts "Generating sample_LID115547_1_1 SAM"
-  bam11g = Bio::DB::Sam.new(bam: bam11, fasta: fa11)
+  # puts "Generating sample_LID115547_1_1 SAM"
+  # bam11g = Bio::DB::Sam.new(bam: bam11, fasta: fa11)
   # puts "indexing at ${Time.now}"
   # bam11g.index()
-  puts "Generating sample_LID115547_1_2 SAM"
-  bam12g = Bio::DB::Sam.new(bam: bam12, fasta: fa12)
+  # puts "Generating sample_LID115547_1_2 SAM"
+  # bam12g = Bio::DB::Sam.new(bam: bam12, fasta: fa12)
   # puts "indexing at ${Time.now}"
   # bam12g.index()
-  puts "Generating sample_LID115547_2_1 SAM"
-  bam21g = Bio::DB::Sam.new(bam: bam21, fasta: fa21)
+  # puts "Generating sample_LID115547_2_1 SAM"
+  # bam21g = Bio::DB::Sam.new(bam: bam21, fasta: fa21)
   # puts "indexing at ${Time.now}"
   # bam21g.index()
-  puts "Generating sample_LID115547_2_2 SAM"
-  bam22g = Bio::DB::Sam.new(bam: bam22, fasta: fa22)
+  # puts "Generating sample_LID115547_2_2 SAM"
+  # bam22g = Bio::DB::Sam.new(bam: bam22, fasta: fa22)
   # puts "indexing at ${Time.now}"
   # bam22g.index()
 
@@ -81,28 +81,37 @@ def scrape(t)
   # puts "Generating sam22 at ${Time.now}"
   # system "samtools view -h #{bam22} > #{sam22}"
 
-  byebug
-
-  File.foreach(file) do |row|
+  File.foreach(sam22) do |row|
     split_row = row.split("\t")
     split_row.map! { |x| ActiveRecord::Base.connection.quote(x) }
 
     if row[0] != "@"
-      columns = split_row
+      qname, flag, chromosome, pos, mapq, cigar, mrnm_rnext, mpos_pnext, isize_tlen, seq, qual = split_row
+      tags = split_row[11...split_row.size-1]
+
       time = ActiveRecord::Base.connection.quote(Time.now)
-      array << "(columns, #{time}, #{time})"
+      array << "(#{qname}, #{flag}, #{chromosome}, #{pos}, #{mapq}, #{cigar}, #{mrnm_rnext}, #{mpos_pnext}, #{isize_tlen}, #{seq}, #{qual}, #{time}, #{time})"
     end
 
     count += 1
     $total_count += 1
+    puts "#{Time.now - t} s: #{count} alignments added" if count % 10000 == 0
+
+    if count % 200000 == 0
+      sql = "INSERT INTO alignments (qname, flag, chromosome, pos, mapq, cigar, mrnm_rnext, mpos_pnext, isize_tlen, seq, qual, created_at, updated_at) VALUES " + array.join(", ")
+      puts "============= Seeding 200,000 rows ============="
+      ActiveRecord::Base.connection.execute(sql)
+      puts "============= #{Alignment.all.count} rows are now in the database ============="
+      array = []
+    end
 
   end
 
-  sql = "INSERT INTO entries (columns, created_at, updated_at) VALUES " + array.join(", ")
+  sql = "INSERT INTO alignments (qname, flag, chromosome, pos, mapq, cigar, mrnm_rnext, mpos_pnext, isize_tlen, seq, qual, created_at, updated_at) VALUES " + array.join(", ")
   ActiveRecord::Base.connection.execute(sql)
 
   puts "---------"
-  puts "#{count} entries from this file were added, with #{$total_count} total entries."
+  puts "#{count} alignments from this file were added, with #{$total_count} total alignments."
 
 end
 
@@ -111,5 +120,14 @@ desc "convert and scrape BAM file"
     t, $total_count = Time.now, 0
     scrape(t)
     puts "\nMigration ended at #{Time.now} and took #{(total / 60).floor} minutes #{total % 60} seconds."
-    # puts "There are now #{Entry.all.count} entries"
+    # puts "There are now #{Alignment.all.count} alignments"
+  end
+
+desc "reload DB and remigrate"
+  task :reload => :environment do
+    system("rake db:drop")
+    system("rake db:create")
+    system("rake db:migrate")
+    system("rake db:migrate RAILS_ENV=development")
+    puts 'Ready for scraping'
   end
