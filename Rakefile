@@ -230,10 +230,18 @@ def scrape_BW(t)
 
 end
 
-desc "convert and scrape BAM file"
+desc "convert and scrape BAM file as SAM"
   task :scrape_sam => :environment do
     t, $total_count = Time.now, 0
     scrape_SAM(t)
+    puts "\nMigration ended at #{Time.now} and took #{(total / 60).floor} minutes #{total % 60} seconds."
+    # puts "There are now #{Alignment.all.count} alignments"
+  end
+
+desc "convert and scrape BAM file as bigWig"
+  task :scrape_bw => :environment do
+    t, $total_count = Time.now, 0
+    scrape_BW(t)
     puts "\nMigration ended at #{Time.now} and took #{(total / 60).floor} minutes #{total % 60} seconds."
     # puts "There are now #{Alignment.all.count} alignments"
   end
