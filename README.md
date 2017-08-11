@@ -1,4 +1,4 @@
-# Code challenge for Envisagenics
+# Converting BAM files to SAM, .bai, fasta, bedgraph, and bigWig
 
 This is an API that can get input from BAM files and convert them to BigWig format for a UI or some frontend can then hit this API to display the graph format of the data.
 
@@ -75,7 +75,7 @@ When you scrape the file you'll first be asked to first be asked to update the p
 The `rake scrape_bw` command works by:
 
 1. Generates relevant .bai files
-2. Calculates genomic positions
+2. Calculates genomic positions into bedgraph files
 3. Generates bigWig files
 4. Iterates through each generated bigWig file to populate a database of binary rows
 
