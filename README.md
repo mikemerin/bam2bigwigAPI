@@ -50,6 +50,8 @@ Before you scrape your data, first run `rake reload` which does:
 
 ---
 
+1) SAM files with readable outputs
+
 When you scrape the file you'll first be asked to first be asked to update the path, sample, and ext to match your files (in this example there are four given). To scrape type in `rake scrape_sam`. You can manually go into the rakefile to edit files to scrape in.
 
 The `rake scrape_sam` command works by:
@@ -66,9 +68,22 @@ Once you populate your database, type in `rails s` to start your server. The end
 
 ---
 
-CLI summary: `rake reload`, `rake scrape_sam`, `rails s`
-CLI summary: `rake reload`, `rake scrape_bw`, `rails s`
+2) bigWig files
+
+When you scrape the file you'll first be asked to first be asked to update the path, sample, and ext to match your files (in this example there are four given). To scrape type in `rake scrape_bw`. You can manually go into the rakefile to edit files to scrape in.
+
+The `rake scrape_bw` command works by:
+
+1. Generates relevant .bai files
+2. Calculates genomic positions
+3. Generates bigWig files
+4. Iterates through each generated bigWig file to populate a database of binary rows
+
+Once you populate your database, type in `rails s` to start your server. The endpoints for each alignment can be found by the following URL format:
+
+`http://localhost:3000/api/v1/bwrows/<number>`
 
 ---
 
-Optional:
+CLI summary SAM: `rake reload`, `rake scrape_sam`, `rails s`
+CLI summary BW:  `rake reload`, `rake scrape_bw`, `rails s`
