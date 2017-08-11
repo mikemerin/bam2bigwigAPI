@@ -74,10 +74,9 @@ When you scrape the file you'll first be asked to first be asked to update the p
 
 The `rake scrape_bw` command works by:
 
-1. Generates relevant .bai files
-2. Calculates genomic positions into bedgraph files
-3. Generates bigWig files
-4. Iterates through each generated bigWig file to populate a database of binary rows
+1. Calculates genomic positions into bedgraph files
+2. Generates bigWig files
+3. Iterates through each generated bigWig file to populate a database of binary rows
 
 Once you populate your database, type in `rails s` to start your server. The endpoints for each alignment can be found by the following URL format:
 

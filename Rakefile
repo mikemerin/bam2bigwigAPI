@@ -166,14 +166,6 @@ def scrape_BW(t)
 
   chrom_info = "/Users/flatironschool/Envisagenics/bam2bigwigAPI/chromInfo.txt"
 
-  # # create base SAM enum and index for .bai files
-  puts "Indexing and generating .bai files"
-  puts "----------------------------------------"
-  system "samtools index #{bam11}"
-  system "samtools index #{bam12}"
-  system "samtools index #{bam21}"
-  system "samtools index #{bam22}"
-
   # # calculate coverage over each genomic position
   puts "Calculating genomic positions"
   puts "----------------------------------------"
