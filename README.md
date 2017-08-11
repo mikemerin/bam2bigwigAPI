@@ -9,9 +9,33 @@ https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&lastVirtModeType=default&lastVi
 
 ---
 
-The file currently has SAM endpoints for each Alignment:
+Required tools:
+
+Before you do anything, please:
+
+* bundle install
+
+**samtools** installation:
+
+* git clone git://github.com/samtools/samtools.git
+
+**bedtools** installation:
+
+* git clone git@github.com:arq5x/bedtools2.git
+* cd bedtools2
+* make clean
+* make all
+* sudo cp bin/* /usr/local/bin
+
+---
+
+There are two ways this file works:
+
+1. Generating .bai and SAM files from BAM files a, then populating a database with human-readable SAM endpoints for each Alignment
 
 ![alignments](http://i.imgur.com/nKAPuFz.png)
+
+2. Generating bedgraph and bigWig files from BAM files, then populating a database with binary bigWig information
 
 ---
 
@@ -24,15 +48,13 @@ Before you scrape your data, first run `rake reload` which does:
 3. rake db:migrate
 4. rake db:migrate RAILS_ENV=development
 
+---
+
 When you scrape the file you'll first be asked to first be asked to update the path, sample, and ext to match your files (in this example there are four given). To scrape type in `rake scrape`. You can manually go into the rakefile to edit files to scrape in.
 
-The `rake scrape` command works by:
+The `rake scrape_SAM` command works by:
 
-1. Generates relevant FASTA files
-2. Creates base SAM enums
-3. Index those enums to generate .bai files
-4. Generates SAM files
-5. Iterates through each SAM file to populate a database
+1. Iterates through each BAM file to populate a database
 
 ---
 
@@ -43,3 +65,15 @@ Once you populate your database, type in `rails s` to start your server. The end
 ---
 
 CLI summary: `rake reload`, `rake scrape`, `rails s`
+
+---
+
+Optional:
+
+The `rake scrape_sam` command works by:
+
+1. Generates relevant FASTA files
+2. Creates base SAM enums
+3. Index those enums to generate .bai files
+4. Generates SAM files
+5. Iterates through each generated SAM file to populate a database of readable alignments

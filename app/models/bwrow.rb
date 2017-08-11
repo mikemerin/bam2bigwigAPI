@@ -1,0 +1,2 @@
+class Bwrow < ApplicationRecord
+end

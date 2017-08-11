@@ -7,7 +7,7 @@ require_relative 'config/application'
 
 Rails.application.load_tasks
 
-def scrape(t)
+def scrape_SAM(t)
 
   # # file shorteners
   path = "/Users/flatironschool/Envisagenics/"
@@ -135,10 +135,105 @@ def scrape(t)
 
 end
 
+
+def scrape_BW(t)
+
+  # # file shorteners
+  path = "/Users/flatironschool/Envisagenics/"
+  sample = "Sample_LID115547"
+  ext = ".me.bam.sort.bam.clean.exon."
+
+  count, array = 0, []
+  puts "\nMigration starting at #{t}"
+  puts "---------"
+
+  # # file names
+  bam11 = "#{path}#{sample}_1_1#{ext}bam"
+  bg11 = "#{path}#{sample}_1_1#{ext}bg"
+  bw11 = "#{path}#{sample}_1_1#{ext}bw"
+
+  bam12 = "#{path}#{sample}_1_2#{ext}bam"
+  bg12 = "#{path}#{sample}_1_2#{ext}bg"
+  bw12 = "#{path}#{sample}_1_2#{ext}bw"
+
+  bam21 = "#{path}#{sample}_2_1#{ext}bam"
+  bg21 = "#{path}#{sample}_2_1#{ext}bg"
+  bw21 = "#{path}#{sample}_2_1#{ext}bw"
+
+  bam22 = "#{path}#{sample}_2_2#{ext}bam"
+  bg22 = "#{path}#{sample}_2_2#{ext}bg"
+  bw22 = "#{path}#{sample}_2_2#{ext}bw"
+
+  chrom_info = "/Users/flatironschool/Envisagenics/bam2bigwigAPI/chromInfo.txt"
+
+  # # create base SAM enum and index for .bai files
+  puts "Indexing and generating .bai files"
+  puts "----------------------------------------"
+  system "samtools index #{bam11}"
+  system "samtools index #{bam12}"
+  system "samtools index #{bam21}"
+  system "samtools index #{bam22}"
+
+  # # calculate coverage over each genomic position
+  puts "Calculating genomic positions"
+  puts "----------------------------------------"
+  puts "Generating bg11"
+  system "genomeCoverageBed -bg -ibam #{bam11} -g chrom_info > #{bg11}"
+  puts "Generating bg12"
+  system "genomeCoverageBed -bg -ibam #{bam12} -g chrom_info > #{bg12}"
+  puts "Generating bg21"
+  system "genomeCoverageBed -bg -ibam #{bam21} -g chrom_info > #{bg21}"
+  puts "Generating bg22"
+  system "genomeCoverageBed -bg -ibam #{bam22} -g chrom_info > #{bg22}"
+
+  # # generate bigwig files
+  puts "Generating bigwig files"
+  puts "----------------------------------------"
+  puts "Generating bw11"
+  system "bedGraphToBigWig bg11 chrom_info bw11"
+  puts "Generating bw12"
+  system "bedGraphToBigWig bg12 chrom_info bw12"
+  puts "Generating bw21"
+  system "bedGraphToBigWig bg21 chrom_info bw21"
+  puts "Generating bw22"
+  system "bedGraphToBigWig bg22 chrom_info bw22"
+
+  files = [bw11, bw12, bw21, bw22]
+
+  files.each do |file|
+    File.foreach(file) do |row|
+      row = ActiveRecord::Base.connection.quote(row)
+
+      time = ActiveRecord::Base.connection.quote(Time.now)
+      array << "(#{row}, #{time}, #{time})"
+
+      count += 1
+      $total_count += 1
+      puts "#{Time.now - t} s: #{count} rows added" if count % 10000 == 0
+
+      if count % 200000 == 0
+        sql = "INSERT INTO bwrows (row, created_at, updated_at) VALUES " + array.join(", ")
+        puts "============= Seeding 200,000 rows ============="
+        ActiveRecord::Base.connection.execute(sql)
+        puts "============= #{Alignment.all.count} rows are now in the database ============="
+        array = []
+      end
+
+    end
+  end
+
+  sql = "INSERT INTO bwrows (row, created_at, updated_at) VALUES " + array.join(", ")
+  ActiveRecord::Base.connection.execute(sql)
+
+  puts "---------"
+  puts "#{count} rows from this file were added, with #{$total_count} total rows."
+
+end
+
 desc "convert and scrape BAM file"
-  task :scrape => :environment do
+  task :scrape_sam => :environment do
     t, $total_count = Time.now, 0
-    scrape(t)
+    scrape_SAM(t)
     puts "\nMigration ended at #{Time.now} and took #{(total / 60).floor} minutes #{total % 60} seconds."
     # puts "There are now #{Alignment.all.count} alignments"
   end
