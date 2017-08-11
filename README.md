@@ -2,6 +2,9 @@
 
 This is an API that can get input from BAM files and convert them to BigWig format for a UI or some frontend can then hit this API to display the graph format of the data.
 
+Note that most of the code that is executed takes place in the Rakefile, which mostly spoofs CLI commands and appropriately culls them into a database.
+
+---
 
 This is an example browser
 
