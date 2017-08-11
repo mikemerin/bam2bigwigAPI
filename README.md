@@ -1,4 +1,4 @@
-# Converting BAM files to SAM, .bai, fasta, bedgraph, and bigWig
+# Converting BAM files: SAM .bai FASTA bedgraph bigWig
 
 This is an API that can get input from BAM files and convert them to BigWig format for a UI or some frontend can then hit this API to display the graph format of the data.
 
