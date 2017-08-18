@@ -60,41 +60,41 @@ def scrape_SAM(t)
   fa22s = "#{sample}_2_2#{ext}fa"
 
   # # generate FASTA files
-  puts "Generating bam11 fasta at ${Time.now}"
+  puts "Generating bam11 fasta at #{Time.now}"
   system "samtools bam2fq #{bam11} | /users/flatironschool/seqtk/seqtk seq -A > #{fa11s}"
-  puts "Generating bam12 fasta at ${Time.now}"
+  puts "Generating bam12 fasta at #{Time.now}"
   system "samtools bam2fq #{bam12} | /users/flatironschool/seqtk/seqtk seq -A > #{fa12s}"
-  puts "Generating bam21 fasta at ${Time.now}"
+  puts "Generating bam21 fasta at #{Time.now}"
   system "samtools bam2fq #{bam21} | /users/flatironschool/seqtk/seqtk seq -A > #{fa21s}"
-  puts "Generating bam22 fasta at ${Time.now}"
+  puts "Generating bam22 fasta at #{Time.now}"
   system "samtools bam2fq #{bam22} | /users/flatironschool/seqtk/seqtk seq -A > #{fa22s}"
 
   # # create base SAM enum and index for .bai files
   puts "Generating sample_LID115547_1_1 SAM"
   bam11g = Bio::DB::Sam.new(bam: bam11, fasta: fa11)
-  puts "indexing at ${Time.now}"
+  puts "indexing at #{Time.now}"
   bam11g.index()
   puts "Generating sample_LID115547_1_2 SAM"
   bam12g = Bio::DB::Sam.new(bam: bam12, fasta: fa12)
-  puts "indexing at ${Time.now}"
+  puts "indexing at #{Time.now}"
   bam12g.index()
   puts "Generating sample_LID115547_2_1 SAM"
   bam21g = Bio::DB::Sam.new(bam: bam21, fasta: fa21)
-  puts "indexing at ${Time.now}"
+  puts "indexing at #{Time.now}"
   bam21g.index()
   puts "Generating sample_LID115547_2_2 SAM"
   bam22g = Bio::DB::Sam.new(bam: bam22, fasta: fa22)
-  puts "indexing at ${Time.now}"
+  puts "indexing at #{Time.now}"
   bam22g.index()
 
   # # create SAM files
-  puts "Generating sam11 at ${Time.now}"
+  puts "Generating sam11 at #{Time.now}"
   system "samtools view -h #{bam11} > #{sam11}"
-  puts "Generating sam12 at ${Time.now}"
+  puts "Generating sam12 at #{Time.now}"
   system "samtools view -h #{bam12} > #{sam12}"
-  puts "Generating sam21 at ${Time.now}"
+  puts "Generating sam21 at #{Time.now}"
   system "samtools view -h #{bam21} > #{sam21}"
-  puts "Generating sam22 at ${Time.now}"
+  puts "Generating sam22 at #{Time.now}"
   system "samtools view -h #{bam22} > #{sam22}"
 
   files = [sam11, sam12, sam21, sam22]
@@ -169,28 +169,29 @@ def scrape_BW(t)
   # # calculate coverage over each genomic position
   puts "Calculating genomic positions"
   puts "----------------------------------------"
-  puts "Generating bg11"
-  system "genomeCoverageBed -bg -ibam #{bam11} -g chrom_info > #{bg11}"
-  puts "Generating bg12"
-  system "genomeCoverageBed -bg -ibam #{bam12} -g chrom_info > #{bg12}"
-  puts "Generating bg21"
-  system "genomeCoverageBed -bg -ibam #{bam21} -g chrom_info > #{bg21}"
+  # puts "Generating bg11"
+  # system "genomeCoverageBed -bg -ibam #{bam11} -g chrom_info > #{bg11}"
+  # puts "Generating bg12"
+  # system "genomeCoverageBed -bg -ibam #{bam12} -g chrom_info > #{bg12}"
+  # puts "Generating bg21"
+  # system "genomeCoverageBed -bg -ibam #{bam21} -g chrom_info > #{bg21}"
   puts "Generating bg22"
   system "genomeCoverageBed -bg -ibam #{bam22} -g chrom_info > #{bg22}"
 
   # # generate bigwig files
   puts "Generating bigwig files"
   puts "----------------------------------------"
-  puts "Generating bw11"
-  system "bedGraphToBigWig bg11 chrom_info bw11"
-  puts "Generating bw12"
-  system "bedGraphToBigWig bg12 chrom_info bw12"
-  puts "Generating bw21"
-  system "bedGraphToBigWig bg21 chrom_info bw21"
+  # puts "Generating bw11"
+  # system "bedGraphToBigWig bg11 chrom_info bw11"
+  # puts "Generating bw12"
+  # system "bedGraphToBigWig bg12 chrom_info bw12"
+  # puts "Generating bw21"
+  # system "bedGraphToBigWig bg21 chrom_info bw21"
   puts "Generating bw22"
   system "bedGraphToBigWig bg22 chrom_info bw22"
 
-  files = [bw11, bw12, bw21, bw22]
+  # files = [bw11, bw12, bw21, bw22]
+  files = [bw22]
 
   files.each do |file|
     File.foreach(file) do |row|

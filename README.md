@@ -32,6 +32,22 @@ Before you do anything, please:
 
 ---
 
+If running an Ubuntu server you may also have to do the following if starting from scratch:
+
+* apt-get install ruby-full
+* apt-get update
+* apt-get install libncurses-dev
+* gem install bio-samtools -v '2.5.1'
+* apt-get install postgresql postgresql-contrib
+* apt-get install libpq-dev
+* gem install pg -v '0.21.0'
+* -u postgres createuser --superuser <your_username_here>
+* git clone https://github.com/lh3/seqtk.git
+* * (then cd into seqtk and type 'make')
+* apt install seqtk
+
+---
+
 There are two ways this file works:
 
 1. Generating .bai and SAM files from BAM files a, then populating a database with human-readable SAM endpoints for each Alignment
