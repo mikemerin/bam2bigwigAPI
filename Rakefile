@@ -211,14 +211,14 @@ def scrape_BW(t)
   # # # generate bigwig files
   # puts "Generating bigwig files"
   # puts "----------------------------------------"
-  # # puts "Generating bw11"
-  # # system "bedGraphToBigWig bgcc11 chrom_info bw11"
-  # # puts "Generating bw12"
-  # # system "bedGraphToBigWig bgcc12 chrom_info bw12"
-  # # puts "Generating bw21"
-  # # system "bedGraphToBigWig bgcc21 chrom_info bw21"
-  puts "Generating bw22"
-  system "./bedGraphToBigWig bgcc22 chrom_info bw22"
+  # puts "Generating bw11"
+  # system "bedGraphToBigWig #{bgcc11} chrom_info #{bw11}"
+  # puts "Generating bw12"
+  # system "bedGraphToBigWig #{bgcc12} chrom_info #{bw12}"
+  # puts "Generating bw21"
+  # system "bedGraphToBigWig #{bgcc21} chrom_info #{bw21}"
+  # puts "Generating bw22"
+  system "./bedGraphToBigWig #{bgcc22} chrom_info #{bw22}"
 
   # files = [bw11, bw12, bw21, bw22]
   files = [bw22]
