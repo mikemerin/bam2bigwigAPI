@@ -1,5 +1,3 @@
-# Add your own tasks in files placed in lib/tasks ending in .rake,
-# for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
 require 'zlib'
 require 'stringio'
 require 'bio-samtools'
@@ -149,53 +147,85 @@ def scrape_BW(t)
 
   # # file names
   bam11 = "#{path}#{sample}_1_1#{ext}bam"
-  bg11 = "#{path}#{sample}_1_1#{ext}bg"
+  bg11 = "#{path}#{sample}_1_1#{ext}bedgraph"
+  bgc11 = "#{path}#{sample}_1_1#{ext}.clip.bedgraph"
+  bgcc11 = "#{path}#{sample}_1_1#{ext}.clip.colate.bedgraph"
   bw11 = "#{path}#{sample}_1_1#{ext}bw"
 
   bam12 = "#{path}#{sample}_1_2#{ext}bam"
-  bg12 = "#{path}#{sample}_1_2#{ext}bg"
+  bg12 = "#{path}#{sample}_1_2#{ext}bedgraph"
+  bgc12 = "#{path}#{sample}_1_2#{ext}.clip.bedgraph"
+  bgcc12 = "#{path}#{sample}_1_2#{ext}.clip.colate.bedgraph"
   bw12 = "#{path}#{sample}_1_2#{ext}bw"
 
   bam21 = "#{path}#{sample}_2_1#{ext}bam"
-  bg21 = "#{path}#{sample}_2_1#{ext}bg"
+  bg21 = "#{path}#{sample}_2_1#{ext}bedgraph"
+  bgc21 = "#{path}#{sample}_2_1#{ext}.clip.bedgraph"
+  bgcc21 = "#{path}#{sample}_2_1#{ext}.clip.colate.bedgraph"
   bw21 = "#{path}#{sample}_2_1#{ext}bw"
 
   bam22 = "#{path}#{sample}_2_2#{ext}bam"
-  bg22 = "#{path}#{sample}_2_2#{ext}bg"
+  bg22 = "#{path}#{sample}_2_2#{ext}bedgraph"
+  bgc21 = "#{path}#{sample}_2_2#{ext}.clip.bedgraph"
+  bgcc21 = "#{path}#{sample}_2_2#{ext}.clip.colate.bedgraph"
   bw22 = "#{path}#{sample}_2_2#{ext}bw"
 
-  chrom_info = "/Users/flatironschool/Envisagenics/bam2bigwigAPI/chromInfo.txt"
+  chrom_info = "/Users/flatironschool/Envisagenics/bam2bigwigAPI/hg38.chrom.sizes"
 
-  # # calculate coverage over each genomic position
-  puts "Calculating genomic positions"
-  puts "----------------------------------------"
-  # puts "Generating bg11"
-  # system "genomeCoverageBed -bg -ibam #{bam11} -g chrom_info > #{bg11}"
-  # puts "Generating bg12"
-  # system "genomeCoverageBed -bg -ibam #{bam12} -g chrom_info > #{bg12}"
-  # puts "Generating bg21"
-  # system "genomeCoverageBed -bg -ibam #{bam21} -g chrom_info > #{bg21}"
+  # # # calculate coverage over each genomic position
+  # puts "Calculating genomic positions"
+  # puts "----------------------------------------"
+  # # puts "Generating bg11"
+  # # system "genomeCoverageBed -bg -ibam #{bam11} -g chrom_info > #{bg11}"
+  # # puts "Generating bg12"
+  # # system "genomeCoverageBed -bg -ibam #{bam12} -g chrom_info > #{bg12}"
+  # # puts "Generating bg21"
+  # # system "genomeCoverageBed -bg -ibam #{bam21} -g chrom_info > #{bg21}"
   puts "Generating bg22"
   system "genomeCoverageBed -bg -ibam #{bam22} -g chrom_info > #{bg22}"
 
-  # # generate bigwig files
-  puts "Generating bigwig files"
-  puts "----------------------------------------"
-  # puts "Generating bw11"
-  # system "bedGraphToBigWig bg11 chrom_info bw11"
-  # puts "Generating bw12"
-  # system "bedGraphToBigWig bg12 chrom_info bw12"
-  # puts "Generating bw21"
-  # system "bedGraphToBigWig bg21 chrom_info bw21"
+  # # # clip file to correct chromosome sizes
+  # puts "bedClipping files"
+  # puts "----------------------------------------"
+  # # puts "bedclipping bg11"
+  # # system "./bedClip #{bg11} chrom_info #{bgc11}"
+  # # puts "bedclipping bg12"
+  # # system "./bedClip #{bg12} chrom_info #{bgc12}"
+  # # puts "bedclipping bg21"
+  # # system "./bedClip #{bg21} chrom_info #{bgc21}"
+  puts "bedclipping bg22"
+  system "./bedClip #{bg22} chrom_info #{bgc22}"
+
+  # # # collate/sort file
+  # puts "collating and sorting files"
+  # puts "----------------------------------------"
+  # # puts "collating bg11"
+  # # system "LC_COLLATE=C sort -k1,1 -k2,2n #{bgc11} > #{bgcc11}"
+  # # puts "collating bg12"
+  # # system "LC_COLLATE=C sort -k1,1 -k2,2n #{bgc12} > #{bgcc12}"
+  # # puts "collating bg21"
+  # # system "LC_COLLATE=C sort -k1,1 -k2,2n #{bgc21} > #{bgcc21}"
+  puts "collating bg22"
+  system "LC_COLLATE=C sort -k1,1 -k2,2n #{bgc22} > #{bgcc22}"
+  #
+  # # # generate bigwig files
+  # puts "Generating bigwig files"
+  # puts "----------------------------------------"
+  # # puts "Generating bw11"
+  # # system "bedGraphToBigWig bgcc11 chrom_info bw11"
+  # # puts "Generating bw12"
+  # # system "bedGraphToBigWig bgcc12 chrom_info bw12"
+  # # puts "Generating bw21"
+  # # system "bedGraphToBigWig bgcc21 chrom_info bw21"
   puts "Generating bw22"
-  system "bedGraphToBigWig bg22 chrom_info bw22"
+  system "./bedGraphToBigWig bgcc22 chrom_info bw22"
 
   # files = [bw11, bw12, bw21, bw22]
   files = [bw22]
 
   files.each do |file|
     File.foreach(file) do |row|
-      row = ActiveRecord::Base.connection.quote(row)
+      row = ActiveRecord::Base.connection.quote(row.force_encoding('iso-8859-1').encode('utf-8'))
 
       time = ActiveRecord::Base.connection.quote(Time.now)
       array << "(#{row}, #{time}, #{time})"
@@ -208,7 +238,7 @@ def scrape_BW(t)
         sql = "INSERT INTO bwrows (row, created_at, updated_at) VALUES " + array.join(", ")
         puts "============= Seeding 200,000 rows ============="
         ActiveRecord::Base.connection.execute(sql)
-        puts "============= #{Alignment.all.count} rows are now in the database ============="
+        puts "============= #{Bwrow.all.count} rows are now in the database ============="
         array = []
       end
 
@@ -228,7 +258,7 @@ desc "convert and scrape BAM file as SAM"
     t, $total_count = Time.now, 0
     scrape_SAM(t)
     puts "\nMigration ended at #{Time.now} and took #{(total / 60).floor} minutes #{total % 60} seconds."
-    # puts "There are now #{Alignment.all.count} alignments"
+    # puts "There are now #{Bwrow.all.count} alignments"
   end
 
 desc "convert and scrape BAM file as bigWig"
@@ -236,7 +266,7 @@ desc "convert and scrape BAM file as bigWig"
     t, $total_count = Time.now, 0
     scrape_BW(t)
     puts "\nMigration ended at #{Time.now} and took #{(total / 60).floor} minutes #{total % 60} seconds."
-    # puts "There are now #{Alignment.all.count} alignments"
+    # puts "There are now #{Bwrow.all.count} rows"
   end
 
 desc "reload DB and remigrate"
