@@ -71,15 +71,15 @@ Before you scrape your data, first run `rake reload` which does:
 
 1) SAM files with readable outputs
 
-When you scrape the file you'll first be asked to first be asked to update the path, sample, and ext to match your files (in this example there are four given). To scrape type in `rake scrape_sam`. You can manually go into the rakefile to edit files to scrape in.
+First type in `rake scrape_sam` and then when prompted enter the full path (without quotes) of the file you'd like to convert and create an API for.
 
 The `rake scrape_sam` command works by:
 
-1. Generates relevant FASTA files
-2. Creates base SAM enums
-3. Index those enums to generate .bai files
-4. Generates SAM files
-5. Iterates through each generated SAM file to populate a database of readable alignments
+1. Generates relevant FASTA file
+2. Creates base SAM enum
+3. Index that enum to generate .bai file
+4. Generates SAM file
+5. Iterates through the generated SAM file to populate a database of readable alignments
 
 Once you populate your database, type in `rails s` to start your server. The endpoints for each alignment can be found by the following URL format:
 
@@ -89,13 +89,13 @@ Once you populate your database, type in `rails s` to start your server. The end
 
 2) bigWig files
 
-When you scrape the file you'll first be asked to first be asked to update the path, sample, and ext to match your files (in this example there are four given). To scrape type in `rake scrape_bw`. You can manually go into the rakefile to edit files to scrape in.
+First type in `rake scrape_bw` and then when prompted enter the full path (without quotes) of the file you'd like to convert and create an API for.
 
 The `rake scrape_bw` command works by:
 
-1. Calculates genomic positions into bedgraph files
-2. Generates bigWig files
-3. Iterates through each generated bigWig file to populate a database of binary rows
+1. Calculates genomic positions into a bedgraph file
+2. Generates bigWig file
+3. Iterates through the generated bigWig file to populate a database of binary rows
 
 Once you populate your database, type in `rails s` to start your server. The endpoints for each alignment can be found by the following URL format:
 
